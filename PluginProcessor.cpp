@@ -94,6 +94,7 @@ void JX11AudioProcessor::changeProgramName (int index, const juce::String& newNa
 void JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     synth.allocateResources(sampleRate, samplesPerBlock);
+    reset();
 }
 
 void JX11AudioProcessor::releaseResources()
@@ -192,14 +193,17 @@ void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float> &buffer, j
 
 void JX11AudioProcessor::handleMidi(uint8_t data0, uint8_t data1, uint8_t data2)
 {
-    char s[16];
-    snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
-    DBG(s);
+    synth.midiMessage(data0, data1, data2);
 }
 
 void JX11AudioProcessor::render(juce::AudioBuffer<float> &buffer, int sampleCount, int bufferOffset)
 {
     // TODO CSQ
+}
+
+void JX11AudioProcessor::reset()
+{
+    synth.reset();
 }
 
 //==============================================================================
