@@ -39,12 +39,10 @@ void Synth::render(float **outputBuffers, int sampleCount)
     
     for (int sample = 0; sample < sampleCount; ++sample)
     {
-        float noise = noiseGen.nextValue();
-        
         float output = 0.0f;
         if (voice.note > 0)
         {
-            output = noise * (voice.velocity / 127.f) * 0.5f;
+            output = voice.render();
         }
         
         outputBufferLeft[sample] = output;
@@ -81,13 +79,18 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::noteOn(int note, int velocity)
 {
     voice.note = note;
-    voice.velocity = velocity;
+    
+    Oscillator& osc = voice.osc;
+    osc.amplitude = (velocity / 127.f) * 0.5f;
+    osc.freq = 261.63f;
+    osc.sampleRate = sampleRate;
+    osc.phaseOffset = 0.0f;
+    osc.reset();
 }
 
 void Synth::noteOff(int note)
 {
     if (voice.note == note) {
         voice.note = 0;
-        voice.velocity = 0;
     }
 }
