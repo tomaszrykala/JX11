@@ -9,6 +9,7 @@
 */
 
 #include "Synth.h"
+#include "Utils.h"
 
 Synth::Synth()
 {
@@ -52,6 +53,9 @@ void Synth::render(float **outputBuffers, int sampleCount)
             outputBufferRight[sample] = output;
         }
     }
+    
+    protectYourEars(outputBufferLeft, sampleCount);
+    protectYourEars(outputBufferRight, sampleCount);
 }
 
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
@@ -61,7 +65,7 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
             noteOff(data1 & 0x7F);
             break;
         
-        case 0x90:
+        case 0x90: {
             uint8_t note = data1 & 0x7F;
             uint8_t velo = data2 & 0x7F;
             if (velo > 0) {
@@ -70,9 +74,7 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
                 noteOff(note);
             }
             break;
-            
-        default:
-            break;
+        }
     }
 }
 
